@@ -1,0 +1,46 @@
+{
+  "brand": { "name": "Røldal Gym", "org": "Røldal Idrettslag" },
+  "nav": { "plans": "Membership", "dropin": "Drop-in", "login": "Log in", "myMembership": "My membership" },
+  "landing": {
+    "title": "Welcome to Røldal Gym",
+    "subtitle": "Become a member or buy a drop-in and get instant access.",
+    "ctaMember": "Become a member",
+    "ctaDropin": "Buy drop-in"
+  },
+  "plans": {
+    "title": "Choose a plan",
+    "monthly": "month",
+    "select": "Select",
+    "foreignNote": "Visiting from abroad? You can also pay by card."
+  },
+  "signup": {
+    "title": "Sign up",
+    "name": "Name",
+    "phone": "Phone number",
+    "email": "Email",
+    "payVipps": "Pay with Vipps",
+    "payCard": "Pay by card"
+  },
+  "membership": {
+    "title": "My membership",
+    "status": "Status",
+    "active": "Active",
+    "inactive": "Inactive",
+    "openDoor": "Open door",
+    "openingDoor": "Opening...",
+    "doorOpened": "Door is open – welcome!",
+    "pinTitle": "Backup code (rotates every hour)",
+    "pinHint": "Use this on the keypad at the door if the network is down.",
+    "nextRotation": "New code in",
+    "nextCharge": "Next charge"
+  },
+  "dropin": {
+    "title": "Drop-in",
+    "subtitle": "Pay now and receive a one-time code via SMS.",
+    "phone": "Phone number",
+    "payVipps": "Pay with Vipps",
+    "payCard": "Pay by card",
+    "success": "Paid! The one-time code has been sent to {phone}."
+  },
+  "errors": { "outsideGeofence": "You must be at the gym to open the door.", "rateLimited": "Please wait before trying again." }
+}

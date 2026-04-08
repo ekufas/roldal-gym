@@ -1,0 +1,46 @@
+{
+  "brand": { "name": "Røldal Gym", "org": "Røldal Idrettslag" },
+  "nav": { "plans": "Medlemskap", "dropin": "Drop-in", "login": "Logg inn", "myMembership": "Mitt medlemskap" },
+  "landing": {
+    "title": "Velkommen til Røldal Gym",
+    "subtitle": "Bli medlem eller kjøp drop-in og få umiddelbar tilgang.",
+    "ctaMember": "Bli medlem",
+    "ctaDropin": "Kjøp drop-in"
+  },
+  "plans": {
+    "title": "Velg medlemskap",
+    "monthly": "Måned",
+    "select": "Velg",
+    "foreignNote": "Bor du i utlandet? Du kan også betale med kort."
+  },
+  "signup": {
+    "title": "Bli medlem",
+    "name": "Navn",
+    "phone": "Telefonnummer",
+    "email": "E-post",
+    "payVipps": "Betal med Vipps",
+    "payCard": "Betal med kort"
+  },
+  "membership": {
+    "title": "Mitt medlemskap",
+    "status": "Status",
+    "active": "Aktiv",
+    "inactive": "Ikke aktiv",
+    "openDoor": "Åpne døra",
+    "openingDoor": "Åpner...",
+    "doorOpened": "Døra er åpen – velkommen!",
+    "pinTitle": "Reservekode (roterer hver time)",
+    "pinHint": "Bruk denne på tastaturet ved døra hvis nettet er nede.",
+    "nextRotation": "Ny kode om",
+    "nextCharge": "Neste trekk"
+  },
+  "dropin": {
+    "title": "Drop-in",
+    "subtitle": "Betal nå og få en engangskode på SMS.",
+    "phone": "Telefonnummer",
+    "payVipps": "Betal med Vipps",
+    "payCard": "Betal med kort",
+    "success": "Betalt! Engangskoden er sendt til {phone}."
+  },
+  "errors": { "outsideGeofence": "Du må være ved gymmet for å åpne døra.", "rateLimited": "Vent litt før du prøver igjen." }
+}
