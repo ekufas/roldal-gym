@@ -19,7 +19,7 @@ export async function GET(req: Request) {
 
   let rotated = 0;
   for (const m of members ?? []) {
-    const u = m.users as { id: string; salto_user_id: string | null } | null;
+    const u = m.users as unknown as { id: string; salto_user_id: string | null } | null;
     if (!u?.salto_user_id) continue;
 
     const pin = generatePin(6);

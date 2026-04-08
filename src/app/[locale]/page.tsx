@@ -1,4 +1,5 @@
 import Link from 'next/link';
+export const dynamic = 'force-dynamic';
 import { useTranslations } from 'next-intl';
 
 export default function LandingPage() {

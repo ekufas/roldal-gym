@@ -1,9 +1,14 @@
 'use client';
-import { useEffect, useState } from 'react';
+export const dynamic = 'force-dynamic';
+import { Suspense, useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
 
 export default function DropinPage() {
+  return <Suspense><DropinInner /></Suspense>;
+}
+
+function DropinInner() {
   const t = useTranslations();
   const params = useSearchParams();
   const [phone, setPhone] = useState('');

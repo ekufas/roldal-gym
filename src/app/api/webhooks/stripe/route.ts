@@ -27,7 +27,7 @@ export async function POST(req: Request) {
           .eq('provider_agreement_id', sessionId)
           .maybeSingle();
         if (!ms) break;
-        const u = ms.users as { name: string | null; phone: string } | null;
+        const u = ms.users as unknown as { name: string | null; phone: string } | null;
         const saltoUser = await salto.createUser({
           firstName: u?.name?.split(' ')[0] ?? 'Member',
           lastName: u?.name?.split(' ').slice(1).join(' ') || (u?.phone ?? ''),

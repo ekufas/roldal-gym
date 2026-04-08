@@ -25,8 +25,8 @@ export default async function MembersPage() {
           </thead>
           <tbody>
             {(rows ?? []).map((r) => {
-              const u = r.users as { name: string | null; phone: string; email: string | null } | null;
-              const p = r.plans as { name: string } | null;
+              const u = r.users as unknown as { name: string | null; phone: string; email: string | null } | null;
+              const p = r.plans as unknown as { name: string } | null;
               return (
                 <tr key={r.id} className="border-b last:border-0">
                   <td className="p-3">{u?.name ?? '—'}</td>

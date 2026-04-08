@@ -1,8 +1,13 @@
 'use client';
+export const dynamic = 'force-dynamic';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
 
 export default function StripeMock() {
+  return <Suspense><Inner /></Suspense>;
+}
+
+function Inner() {
   const params = useSearchParams();
   const router = useRouter();
   const sessionId = params.get('session') ?? '';

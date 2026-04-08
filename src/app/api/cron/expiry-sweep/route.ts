@@ -21,7 +21,7 @@ export async function GET(req: Request) {
     .lt('current_period_end', now);
 
   for (const m of expiredMembers ?? []) {
-    const saltoId = (m.users as { salto_user_id: string | null } | null)?.salto_user_id;
+    const saltoId = (m.users as unknown as { salto_user_id: string | null } | null)?.salto_user_id;
     if (saltoId) await salto.removeFromAccessGroup(saltoId, env.salto.membersGroupId || 'members');
     await db.from('memberships').update({ status: 'expired' }).eq('id', m.id);
   }

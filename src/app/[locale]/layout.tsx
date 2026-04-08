@@ -4,6 +4,8 @@ import { getMessages } from 'next-intl/server';
 import { locales } from '@/i18n';
 import '../globals.css';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata = {
   title: 'Røldal Gym',
   description: 'Medlemskap og drop-in for Røldal Gym',

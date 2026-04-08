@@ -1,5 +1,6 @@
 'use client';
-import { useState } from 'react';
+export const dynamic = 'force-dynamic';
+import { Suspense, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
@@ -7,6 +8,10 @@ import { createClient } from '@/lib/supabase/client';
 type Stage = 'form' | 'code' | 'pay';
 
 export default function SignupPage() {
+  return <Suspense><SignupInner /></Suspense>;
+}
+
+function SignupInner() {
   const t = useTranslations();
   const params = useSearchParams();
   const supabase = createClient();

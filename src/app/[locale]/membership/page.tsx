@@ -43,7 +43,7 @@ export default async function MembershipPage() {
     : { data: null };
 
   const isActive = membership?.status === 'active';
-  const planName = (membership?.plans as { name?: string } | null)?.name;
+  const planName = (membership?.plans as unknown as { name?: string } | null)?.name;
 
   return (
     <div className="space-y-6 pt-6">

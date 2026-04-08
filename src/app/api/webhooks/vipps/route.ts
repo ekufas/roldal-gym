@@ -31,7 +31,7 @@ export async function POST(req: Request) {
         .maybeSingle();
       if (!ms) break;
 
-      const u = ms.users as { name: string | null; phone: string } | null;
+      const u = ms.users as unknown as { name: string | null; phone: string } | null;
       const saltoUser = await salto.createUser({
         firstName: u?.name?.split(' ')[0] ?? 'Member',
         lastName: u?.name?.split(' ').slice(1).join(' ') || (u?.phone ?? ''),
@@ -81,7 +81,7 @@ export async function POST(req: Request) {
           cancelled_at: new Date().toISOString(),
         })
         .eq('id', ms.id);
-      const saltoId = (ms.users as { salto_user_id: string | null } | null)?.salto_user_id;
+      const saltoId = (ms.users as unknown as { salto_user_id: string | null } | null)?.salto_user_id;
       if (saltoId) await salto.removeFromAccessGroup(saltoId, env.salto.membersGroupId || 'members');
       break;
     }
