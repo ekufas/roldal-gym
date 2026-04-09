@@ -71,5 +71,10 @@
     "paidTitle": "Betaling mottatt",
     "paidBody": "Du får en SMS med en engangskode du kan taste på tastaturet ved døra. Koden er gyldig i 4 timer."
   },
-  "errors": { "outsideGeofence": "Du må være ved gymmet for å åpne døra.", "rateLimited": "Vent litt før du prøver igjen." }
+  "errors": {
+    "outsideGeofence": "Du må være ved gymmet for å åpne døra.",
+    "rateLimited": "Vent litt før du prøver igjen.",
+    "otpCooldown": "Koden er allerede sendt. Sjekk meldingene dine eller vent {seconds} sekunder før du prøver igjen.",
+    "otpDailyLimit": "Du har bedt om for mange koder i dag. Prøv igjen i morgen."
+  }
 }

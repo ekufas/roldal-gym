@@ -27,7 +27,25 @@ function SignupInner({ initialStage = 'form', initialName = '', initialPhone = '
 
   async function sendOtp() {
     setBusy(true); setError('');
-    const { error } = await supabase.auth.signInWithOtp({ phone: normalize(phone) });
+    const normalized = normalize(phone);
+    const check = await fetch('/api/auth/can-send-otp', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ phone: normalized }),
+    }).then((r) => r.json());
+    if (!check.ok) {
+      setBusy(false);
+      if (check.reason === 'cooldown') {
+        setError(t('errors.otpCooldown', { seconds: check.retryInSeconds ?? 60 }));
+        setStage('code');
+      } else if (check.reason === 'daily_limit') {
+        setError(t('errors.otpDailyLimit'));
+      } else {
+        setError('Error');
+      }
+      return;
+    }
+    const { error } = await supabase.auth.signInWithOtp({ phone: normalized });
     setBusy(false);
     if (error) setError(error.message);
     else setStage('code');

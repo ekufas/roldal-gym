@@ -71,5 +71,10 @@
     "paidTitle": "Payment received",
     "paidBody": "You will get an SMS with a one-time code to enter on the keypad at the door. The code is valid for 4 hours."
   },
-  "errors": { "outsideGeofence": "You must be at the gym to open the door.", "rateLimited": "Please wait before trying again." }
+  "errors": {
+    "outsideGeofence": "You must be at the gym to open the door.",
+    "rateLimited": "Please wait before trying again.",
+    "otpCooldown": "The code has already been sent. Check your messages or wait {seconds} seconds before trying again.",
+    "otpDailyLimit": "You have requested too many codes today. Please try again tomorrow."
+  }
 }
