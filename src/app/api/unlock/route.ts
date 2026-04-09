@@ -58,5 +58,56 @@ export async function POST(req: Request) {
     metadata: { lat: parsed.data.lat, lon: parsed.data.lon },
   });
 
+  await checkSharingPatterns(profile.id);
+
   return NextResponse.json({ ok: true });
+}
+
+// Fire-and-forget detection. Writes a row to sharing_alerts if the member's
+// recent entry pattern looks like credential sharing or tailgating.
+async function checkSharingPatterns(userId: string) {
+  const db = supabaseAdmin();
+
+  // 1. Rapid repeat: 2+ entries in the last 60 seconds.
+  const rapidCutoff = new Date(Date.now() - 60 * 1000).toISOString();
+  const { data: rapid } = await db
+    .from('entry_log')
+    .select('id, occurred_at')
+    .eq('user_id', userId)
+    .gte('occurred_at', rapidCutoff);
+  if (rapid && rapid.length >= 2) {
+    await flagIfMissing(userId, 'rapid_repeat', {
+      count: rapid.length,
+      window_seconds: 60,
+    });
+  }
+
+  // 2. High-frequency day: >4 entries in the last 24h.
+  const dayCutoff = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+  const { data: daily } = await db
+    .from('entry_log')
+    .select('id')
+    .eq('user_id', userId)
+    .gte('occurred_at', dayCutoff);
+  if (daily && daily.length > 4) {
+    await flagIfMissing(userId, 'high_frequency_day', {
+      count: daily.length,
+      window_hours: 24,
+    });
+  }
+}
+
+// Only insert an alert if there isn't already an unresolved one of the same reason
+// for this user — keeps the queue from filling up with duplicates.
+async function flagIfMissing(userId: string, reason: string, details: Record<string, unknown>) {
+  const db = supabaseAdmin();
+  const { data: existing } = await db
+    .from('sharing_alerts')
+    .select('id')
+    .eq('user_id', userId)
+    .eq('reason', reason)
+    .eq('resolved', false)
+    .maybeSingle();
+  if (existing) return;
+  await db.from('sharing_alerts').insert({ user_id: userId, reason, details });
 }
