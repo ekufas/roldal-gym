@@ -1,11 +1,13 @@
 {
   "brand": { "name": "Røldal Gym", "org": "Røldal Idrettslag" },
   "nav": { "plans": "Membership", "dropin": "Drop-in", "login": "Log in", "myMembership": "My membership" },
+  "header": { "login": "Log in", "myMembership": "My membership", "greeting": "Hi, {name}" },
   "landing": {
     "title": "Welcome to Røldal Gym",
     "subtitle": "Become a member or buy a drop-in and get instant access.",
     "ctaMember": "Become a member",
-    "ctaDropin": "Buy drop-in"
+    "ctaDropin": "Buy drop-in",
+    "goToMembership": "Go to My membership"
   },
   "plans": {
     "title": "Choose a plan",
