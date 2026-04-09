@@ -4,6 +4,7 @@ import { getTranslations } from 'next-intl/server';
 import { salto } from '@/lib/salto';
 import { supabaseServer, supabaseAdmin } from '@/lib/supabase/server';
 import OpenDoorButton from './open-door-button';
+import ConfirmButton from './confirm-button';
 
 export const dynamic = 'force-dynamic';
 
@@ -36,6 +37,7 @@ async function cancelMembership() {
     .update({ status: 'cancelled', cancelled_at: new Date().toISOString() })
     .eq('user_id', profile.id)
     .in('status', ['active', 'past_due']);
+  await db.from('member_pins').update({ revoked: true }).eq('user_id', profile.id).eq('revoked', false);
   if (profile.salto_user_id) await salto.disableUser(profile.salto_user_id);
   revalidatePath('/membership');
 }
@@ -103,7 +105,7 @@ export default async function MembershipPage() {
 
       {isActive && <OpenDoorButton />}
 
-      {latestPin && (
+      {isActive && latestPin && (
         <div className="rounded-xl border bg-white p-4">
           <div className="text-sm text-neutral-500">{t('membership.pinTitle')}</div>
           <div className="my-2 font-mono text-3xl tracking-widest">{latestPin.pin_code}</div>
@@ -153,12 +155,12 @@ export default async function MembershipPage() {
         >
           <h2 className="font-semibold text-red-700">{t('membership.cancelTitle')}</h2>
           <p className="mt-1 text-xs text-neutral-500">{t('membership.cancelHint')}</p>
-          <button
-            type="submit"
+          <ConfirmButton
+            message={t('membership.cancelConfirm')}
             className="mt-3 rounded-xl border border-red-300 px-4 py-2 text-sm font-semibold text-red-600"
           >
             {t('membership.cancelButton')}
-          </button>
+          </ConfirmButton>
         </form>
       )}
 
