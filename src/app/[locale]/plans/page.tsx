@@ -26,7 +26,7 @@ export default async function PlansPage() {
               </div>
               <div className="text-lg">
                 {(p.price_nok / 100).toLocaleString('no-NO')} kr
-                <span className="text-sm text-neutral-500">/{p.interval === 'month' ? t('plans.monthly') : 'år'}</span>
+                <span className="text-sm text-neutral-500">/{p.interval === 'month' ? t('plans.monthly') : t('plans.yearly')}</span>
               </div>
             </div>
             <Link

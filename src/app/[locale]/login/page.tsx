@@ -1,6 +1,7 @@
 'use client';
 export const dynamic = 'force-dynamic';
 import { Suspense, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 
@@ -9,6 +10,7 @@ export default function LoginPage() {
 }
 
 function LoginInner() {
+  const t = useTranslations();
   const router = useRouter();
   const params = useSearchParams();
   const next = params.get('next') ?? '/membership';
@@ -43,12 +45,12 @@ function LoginInner() {
 
   return (
     <div className="space-y-4 pt-12">
-      <h1 className="text-2xl font-bold">Logg inn</h1>
+      <h1 className="text-2xl font-bold">{t('login.title')}</h1>
       {stage === 'phone' ? (
         <>
           <input
             className="w-full rounded-lg border p-3"
-            placeholder="Telefonnummer (f.eks. +4799999999)"
+            placeholder={t('login.phonePlaceholder')}
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
           />
@@ -57,7 +59,7 @@ function LoginInner() {
             disabled={busy || phone.length < 8}
             className="w-full rounded-xl bg-brand px-4 py-3 font-semibold text-white disabled:opacity-50"
           >
-            {busy ? 'Sender...' : 'Send SMS-kode'}
+            {busy ? t('login.sending') : t('login.sendCode')}
           </button>
         </>
       ) : (
@@ -75,10 +77,10 @@ function LoginInner() {
             disabled={busy || code.length < 6}
             className="w-full rounded-xl bg-brand px-4 py-3 font-semibold text-white disabled:opacity-50"
           >
-            {busy ? 'Bekrefter...' : 'Bekreft'}
+            {busy ? t('login.verifying') : t('login.verify')}
           </button>
           <button onClick={() => setStage('phone')} className="w-full text-sm text-neutral-500">
-            Endre telefonnummer
+            {t('login.changePhone')}
           </button>
         </>
       )}

@@ -10,6 +10,7 @@
   "plans": {
     "title": "Velg medlemskap",
     "monthly": "Måned",
+    "yearly": "år",
     "select": "Velg",
     "foreignNote": "Bor du i utlandet? Du kan også betale med kort."
   },
@@ -19,7 +20,23 @@
     "phone": "Telefonnummer",
     "email": "E-post",
     "payVipps": "Betal med Vipps",
-    "payCard": "Betal med kort"
+    "payCard": "Betal med kort",
+    "sendCode": "Send SMS-kode",
+    "sending": "Sender...",
+    "verifying": "Bekrefter...",
+    "verifyCode": "Bekreft kode",
+    "back": "Tilbake",
+    "codeSentTo": "Vi sendte en kode til {phone}.",
+    "phoneConfirmed": "Telefonnummer bekreftet. Velg betalingsmetode:"
+  },
+  "login": {
+    "title": "Logg inn",
+    "phonePlaceholder": "Telefonnummer (f.eks. +4799999999)",
+    "sendCode": "Send SMS-kode",
+    "sending": "Sender...",
+    "verify": "Bekreft",
+    "verifying": "Bekrefter...",
+    "changePhone": "Endre telefonnummer"
   },
   "membership": {
     "title": "Mitt medlemskap",
@@ -48,7 +65,9 @@
     "phone": "Telefonnummer",
     "payVipps": "Betal med Vipps",
     "payCard": "Betal med kort",
-    "success": "Betalt! Engangskoden er sendt til {phone}."
+    "success": "Betalt! Engangskoden er sendt til {phone}.",
+    "paidTitle": "Betaling mottatt",
+    "paidBody": "Du får en SMS med en engangskode du kan taste på tastaturet ved døra. Koden er gyldig i 4 timer."
   },
   "errors": { "outsideGeofence": "Du må være ved gymmet for å åpne døra.", "rateLimited": "Vent litt før du prøver igjen." }
 }

@@ -67,14 +67,14 @@ function SignupInner() {
           <input className="w-full rounded-lg border p-3" placeholder={t('signup.phone')} value={phone} onChange={(e) => setPhone(e.target.value)} />
           <input className="w-full rounded-lg border p-3" placeholder={t('signup.email')} value={email} onChange={(e) => setEmail(e.target.value)} />
           <button disabled={busy || !name || phone.length < 8} onClick={sendOtp} className="w-full rounded-xl bg-brand px-4 py-3 font-semibold text-white disabled:opacity-50">
-            {busy ? 'Sender...' : 'Send SMS-kode'}
+            {busy ? t('signup.sending') : t('signup.sendCode')}
           </button>
         </>
       )}
 
       {stage === 'code' && (
         <>
-          <p className="text-sm text-neutral-600">Vi sendte en kode til {normalize(phone)}.</p>
+          <p className="text-sm text-neutral-600">{t('signup.codeSentTo', { phone: normalize(phone) })}</p>
           <input
             className="w-full rounded-lg border p-3 text-center font-mono text-2xl tracking-widest"
             placeholder="000000"
@@ -84,15 +84,15 @@ function SignupInner() {
             maxLength={6}
           />
           <button disabled={busy || code.length < 6} onClick={verifyOtp} className="w-full rounded-xl bg-brand px-4 py-3 font-semibold text-white disabled:opacity-50">
-            {busy ? 'Bekrefter...' : 'Bekreft kode'}
+            {busy ? t('signup.verifying') : t('signup.verifyCode')}
           </button>
-          <button onClick={() => setStage('form')} className="w-full text-sm text-neutral-500">Tilbake</button>
+          <button onClick={() => setStage('form')} className="w-full text-sm text-neutral-500">{t('signup.back')}</button>
         </>
       )}
 
       {stage === 'pay' && (
         <>
-          <p className="text-sm text-neutral-600">Telefonnummer bekreftet. Velg betalingsmetode:</p>
+          <p className="text-sm text-neutral-600">{t('signup.phoneConfirmed')}</p>
           <button disabled={busy} onClick={() => start('vipps')} className="w-full rounded-xl bg-brand px-4 py-3 font-semibold text-white disabled:opacity-50">
             {t('signup.payVipps')}
           </button>

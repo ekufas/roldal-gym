@@ -36,10 +36,8 @@ function DropinInner() {
     return (
       <div className="space-y-4 pt-12 text-center">
         <div className="text-3xl">✓</div>
-        <h1 className="text-2xl font-bold text-brand">Betaling mottatt</h1>
-        <p className="text-neutral-600">
-          Du får en SMS med en engangskode du kan taste på tastaturet ved døra. Koden er gyldig i 4 timer.
-        </p>
+        <h1 className="text-2xl font-bold text-brand">{t('dropin.paidTitle')}</h1>
+        <p className="text-neutral-600">{t('dropin.paidBody')}</p>
       </div>
     );
   }
