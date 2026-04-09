@@ -38,4 +38,8 @@ export const env = {
     radiusMeters: Number(process.env.GYM_GEOFENCE_METERS ?? 80),
   },
   cronSecret: process.env.CRON_SECRET ?? '',
+  email: {
+    resendApiKey: process.env.RESEND_API_KEY ?? '',
+    from: process.env.EMAIL_FROM ?? 'Røldal Gym <no-reply@roldalgym.no>',
+  },
 };

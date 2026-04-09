@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { salto } from '@/lib/salto';
 import { sms } from '@/lib/sms';
+import { email, membershipReceiptHtml } from '@/lib/email';
 import { generatePin } from '@/lib/pin';
 import { env } from '@/lib/env';
 import { supabaseAdmin } from '@/lib/supabase/server';
@@ -23,11 +24,12 @@ export async function POST(req: Request) {
       if (mode === 'subscription') {
         const { data: ms } = await db
           .from('memberships')
-          .select('id, user_id, users(name, phone)')
+          .select('id, user_id, users(name, phone, email), plans(name, price_nok, interval)')
           .eq('provider_agreement_id', sessionId)
           .maybeSingle();
         if (!ms) break;
-        const u = ms.users as unknown as { name: string | null; phone: string } | null;
+        const u = ms.users as unknown as { name: string | null; phone: string; email: string | null } | null;
+        const plan = ms.plans as unknown as { name: string; price_nok: number; interval: string } | null;
         const saltoUser = await salto.createUser({
           firstName: u?.name?.split(' ')[0] ?? 'Member',
           lastName: u?.name?.split(' ').slice(1).join(' ') || (u?.phone ?? ''),
@@ -35,7 +37,8 @@ export async function POST(req: Request) {
         await salto.addToAccessGroup(saltoUser.id, env.salto.membersGroupId || 'members');
 
         const periodEnd = new Date();
-        periodEnd.setMonth(periodEnd.getMonth() + 1);
+        if (plan?.interval === 'year') periodEnd.setFullYear(periodEnd.getFullYear() + 1);
+        else periodEnd.setMonth(periodEnd.getMonth() + 1);
         await db
           .from('memberships')
           .update({ status: 'active', current_period_end: periodEnd.toISOString() })
@@ -50,11 +53,26 @@ export async function POST(req: Request) {
           pin_code: pin,
           valid_until: validUntil.toISOString(),
         });
+
+        if (u?.email && plan) {
+          await email.send({
+            to: u.email,
+            subject: 'Receipt – Røldal Gym membership',
+            html: membershipReceiptHtml({
+              name: u.name,
+              planName: plan.name,
+              amountKr: Math.round(plan.price_nok / 100),
+              interval: plan.interval,
+              nextChargeDate: periodEnd,
+              provider: 'stripe',
+            }),
+          });
+        }
       } else {
         // one-off drop-in
         const { data: dropin } = await db
           .from('dropins')
-          .select('id, phone')
+          .select('id, phone, amount_nok')
           .eq('provider_payment_id', sessionId)
           .maybeSingle();
         if (!dropin) break;
@@ -71,7 +89,11 @@ export async function POST(req: Request) {
             salto_user_id: saltoUser.id,
           })
           .eq('id', dropin.id);
-        await sms.send(dropin.phone, `Røldal Gym code: ${pin} (valid 4 hours)`);
+        const amountKr = Math.round(dropin.amount_nok / 100);
+        await sms.send(
+          dropin.phone,
+          `Røldal Gym: Thanks for your purchase (${amountKr} kr). Your one-time code is ${pin}, valid for 4 hours. Welcome!`,
+        );
       }
       break;
     }

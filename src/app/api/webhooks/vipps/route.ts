@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { salto } from '@/lib/salto';
 import { sms } from '@/lib/sms';
+import { email, membershipReceiptHtml } from '@/lib/email';
 import { generatePin } from '@/lib/pin';
 import { env } from '@/lib/env';
 import { supabaseAdmin } from '@/lib/supabase/server';
@@ -26,12 +27,13 @@ export async function POST(req: Request) {
 
       const { data: ms } = await db
         .from('memberships')
-        .select('id, user_id, users(name, phone)')
+        .select('id, user_id, users(name, phone, email), plans(name, price_nok, interval)')
         .eq('provider_agreement_id', agreementId)
         .maybeSingle();
       if (!ms) break;
 
-      const u = ms.users as unknown as { name: string | null; phone: string } | null;
+      const u = ms.users as unknown as { name: string | null; phone: string; email: string | null } | null;
+      const plan = ms.plans as unknown as { name: string; price_nok: number; interval: string } | null;
       const saltoUser = await salto.createUser({
         firstName: u?.name?.split(' ')[0] ?? 'Member',
         lastName: u?.name?.split(' ').slice(1).join(' ') || (u?.phone ?? ''),
@@ -61,6 +63,21 @@ export async function POST(req: Request) {
         pin_code: pin,
         valid_until: validUntil.toISOString(),
       });
+
+      if (u?.email && plan) {
+        await email.send({
+          to: u.email,
+          subject: 'Kvittering – Røldal Gym medlemskap',
+          html: membershipReceiptHtml({
+            name: u.name,
+            planName: plan.name,
+            amountKr: Math.round(plan.price_nok / 100),
+            interval: plan.interval,
+            nextChargeDate: periodEnd,
+            provider: 'vipps',
+          }),
+        });
+      }
       break;
     }
 
@@ -91,7 +108,7 @@ export async function POST(req: Request) {
       if (!paymentId) break;
       const { data: dropin } = await db
         .from('dropins')
-        .select('id, phone')
+        .select('id, phone, amount_nok')
         .eq('provider_payment_id', paymentId)
         .maybeSingle();
       if (!dropin) break;
@@ -111,7 +128,11 @@ export async function POST(req: Request) {
         })
         .eq('id', dropin.id);
 
-      await sms.send(dropin.phone, `Røldal Gym kode: ${pin} (gyldig 4 timer)`);
+      const amountKr = Math.round(dropin.amount_nok / 100);
+      await sms.send(
+        dropin.phone,
+        `Røldal Gym: Takk for kjøpet (${amountKr} kr). Din engangskode er ${pin}, gyldig i 4 timer. Velkommen!`,
+      );
       break;
     }
   }
