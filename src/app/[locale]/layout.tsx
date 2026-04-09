@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import { locales } from '@/i18n';
+import LanguageSwitcher from './language-switcher';
 import '../globals.css';
 
 export const dynamic = 'force-dynamic';
@@ -27,7 +28,12 @@ export default async function LocaleLayout({
     <html lang={locale}>
       <body>
         <NextIntlClientProvider locale={locale} messages={messages}>
-          <main className="mx-auto max-w-md p-4">{children}</main>
+          <main className="mx-auto max-w-md p-4">
+            <div className="flex justify-end pb-2">
+              <LanguageSwitcher />
+            </div>
+            {children}
+          </main>
         </NextIntlClientProvider>
       </body>
     </html>
