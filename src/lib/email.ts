@@ -23,6 +23,40 @@ export const email = {
   },
 };
 
+export function paymentFailedHtml(opts: {
+  name: string | null;
+  attempt: number;
+  finalAttempt: boolean;
+  nextRetryAt: Date | null;
+  reactivateUrl: string;
+}) {
+  const greeting = opts.name ? `Hei ${opts.name},` : 'Hei,';
+  if (opts.finalAttempt) {
+    return `
+      <div style="font-family:system-ui,sans-serif;max-width:520px;margin:auto;padding:24px;color:#222">
+        <h1 style="color:#b91c1c;margin:0 0 16px">Medlemskapet er avsluttet</h1>
+        <p>${greeting}</p>
+        <p>Vi har dessverre ikke fått trukket betalingen for Røldal Gym-medlemskapet ditt etter flere forsøk, og medlemskapet er nå avsluttet.</p>
+        <p>Du er velkommen tilbake når som helst — start på nytt via <a href="${opts.reactivateUrl}" style="color:#0b6e4f">Røldal Gym</a>.</p>
+        <p style="color:#999;font-size:12px;margin-top:32px">Røldal Idrettslag</p>
+      </div>
+    `;
+  }
+  const retryText = opts.nextRetryAt
+    ? `Vi prøver igjen automatisk ${opts.nextRetryAt.toLocaleDateString('no-NO')}.`
+    : 'Vi prøver igjen automatisk de neste dagene.';
+  return `
+    <div style="font-family:system-ui,sans-serif;max-width:520px;margin:auto;padding:24px;color:#222">
+      <h1 style="color:#b45309;margin:0 0 16px">Betalingen feilet</h1>
+      <p>${greeting}</p>
+      <p>Vipps klarte ikke å trekke medlemskapet ditt (forsøk ${opts.attempt}). ${retryText}</p>
+      <p>Du beholder tilgangen til gymmet i mellomtiden. Hvis du vet at noe er galt med Vipps-avtalen (utløpt kort e.l.), kan du oppdatere den med ett klikk:</p>
+      <p><a href="${opts.reactivateUrl}" style="display:inline-block;background:#0b6e4f;color:#fff;padding:10px 16px;border-radius:8px;text-decoration:none">Oppdater Vipps-avtale</a></p>
+      <p style="color:#999;font-size:12px;margin-top:32px">Røldal Idrettslag · Denne e-posten trenger ikke svar.</p>
+    </div>
+  `;
+}
+
 export function membershipReceiptHtml(opts: {
   name: string | null;
   planName: string;

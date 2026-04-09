@@ -59,6 +59,9 @@
     "cancelHint": "Your membership ends immediately and you lose door access.",
     "cancelButton": "Cancel membership",
     "cancelConfirm": "Are you sure you want to cancel your membership?",
+    "pastDueTitle": "Payment failed",
+    "pastDueHint": "We'll retry automatically. You can also update your Vipps agreement in one tap if your card has expired.",
+    "reactivate": "Update Vipps agreement",
     "logout": "Log out"
   },
   "dropin": {

@@ -1,6 +1,7 @@
 {
   "crons": [
     { "path": "/api/cron/rotate-pins", "schedule": "0 * * * *" },
-    { "path": "/api/cron/expiry-sweep", "schedule": "15 3 * * *" }
+    { "path": "/api/cron/expiry-sweep", "schedule": "15 3 * * *" },
+    { "path": "/api/cron/retry-failed-charges", "schedule": "30 3 * * *" }
   ]
 }

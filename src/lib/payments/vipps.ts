@@ -32,6 +32,12 @@ export interface VippsClient {
     description: string;
     callbackPrefix: string;
   }): Promise<VippsPayment>;
+  createCharge(input: {
+    agreementId: string;
+    amountNok: number;
+    description: string;
+  }): Promise<{ chargeId: string }>;
+  stopAgreement(agreementId: string): Promise<void>;
 }
 
 const mockClient: VippsClient = {
@@ -44,6 +50,14 @@ const mockClient: VippsClient = {
     const id = `mock-pay-${crypto.randomUUID()}`;
     console.log('[VippsMock] createOneOffPayment', description, '→', id);
     return { paymentId: id, redirectUrl: `${env.appUrl}/mock/vipps/pay?paymentId=${id}` };
+  },
+  async createCharge({ agreementId, amountNok, description }) {
+    const chargeId = `mock-charge-${crypto.randomUUID()}`;
+    console.log('[VippsMock] createCharge', agreementId, amountNok, description, '→', chargeId);
+    return { chargeId };
+  },
+  async stopAgreement(agreementId) {
+    console.log('[VippsMock] stopAgreement', agreementId);
   },
 };
 
@@ -138,6 +152,40 @@ const realClient: VippsClient = {
     const data = await res.json() as { reference: string; redirectUrl: string };
     console.log('[Vipps] createOneOffPayment →', data.reference);
     return { paymentId: data.reference, redirectUrl: data.redirectUrl };
+  },
+
+  async createCharge({ agreementId, amountNok, description }) {
+    const token = await getAccessToken();
+    const idempotencyKey = crypto.randomUUID();
+    const due = new Date(Date.now() + 2 * 24 * 60 * 60 * 1000);
+    const body = {
+      amount: amountNok * 100,
+      description,
+      due: due.toISOString(),
+      retryDays: 3,
+      transactionType: 'DIRECT_CAPTURE',
+    };
+    const res = await fetch(`${env.vipps.apiBase}/recurring/v3/agreements/${agreementId}/charges`, {
+      method: 'POST',
+      headers: { ...commonHeaders(token), 'Idempotency-Key': idempotencyKey },
+      body: JSON.stringify(body),
+    });
+    if (!res.ok) throw new Error(`Vipps createCharge failed: ${res.status} ${await res.text()}`);
+    const data = await res.json() as { chargeId: string };
+    console.log('[Vipps] createCharge', agreementId, '→', data.chargeId);
+    return { chargeId: data.chargeId };
+  },
+
+  async stopAgreement(agreementId) {
+    const token = await getAccessToken();
+    const res = await fetch(`${env.vipps.apiBase}/recurring/v3/agreements/${agreementId}`, {
+      method: 'PATCH',
+      headers: commonHeaders(token),
+      body: JSON.stringify({ status: 'STOPPED' }),
+    });
+    if (!res.ok) {
+      console.error(`Vipps stopAgreement failed: ${res.status} ${await res.text()}`);
+    }
   },
 };
 

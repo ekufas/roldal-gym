@@ -39,8 +39,14 @@ export default async function MemberDetailPage({ params }: { params: { id: strin
     .maybeSingle();
   if (!user) notFound();
 
-  const [{ data: memberships }, { data: pins }, { data: entries }, { data: alerts }, { data: dropins }] =
-    await Promise.all([
+  const [
+    { data: memberships },
+    { data: pins },
+    { data: entries },
+    { data: alerts },
+    { data: dropins },
+    { data: failures },
+  ] = await Promise.all([
       db
         .from('memberships')
         .select('id, status, current_period_end, provider, provider_agreement_id, cancelled_at, created_at, plans(name)')
@@ -70,6 +76,12 @@ export default async function MemberDetailPage({ params }: { params: { id: strin
         .eq('user_id', params.id)
         .order('created_at', { ascending: false })
         .limit(10),
+      db
+        .from('payment_failures')
+        .select('id, failed_at, attempt, next_retry_at, last_error, resolved, resolved_at, memberships!inner(user_id)')
+        .eq('memberships.user_id', params.id)
+        .order('failed_at', { ascending: false })
+        .limit(20),
     ]);
 
   const activePin = (pins ?? []).find((p) => !p.revoked && new Date(p.valid_until).getTime() > Date.now());
@@ -169,6 +181,26 @@ export default async function MemberDetailPage({ params }: { params: { id: strin
           {(alerts ?? []).length === 0 && <div className="text-neutral-400">Ingen varsler.</div>}
         </div>
       </section>
+
+      {(failures ?? []).length > 0 && (
+        <section className="rounded-xl border bg-white p-4">
+          <h2 className="mb-3 font-semibold">Betalingshistorikk (feilede)</h2>
+          <div className="space-y-1 text-sm">
+            {(failures ?? []).map((f) => (
+              <div key={f.id} className="flex items-center justify-between border-b py-1 last:border-0">
+                <span className="text-xs text-neutral-500">{new Date(f.failed_at).toLocaleString('no-NO')}</span>
+                <span className="text-xs">
+                  Forsøk {f.attempt}
+                  {f.next_retry_at && !f.resolved && <> · neste {new Date(f.next_retry_at).toLocaleDateString('no-NO')}</>}
+                  <span className={`ml-2 rounded px-2 py-0.5 ${f.resolved ? 'bg-green-100 text-green-800' : 'bg-amber-100 text-amber-800'}`}>
+                    {f.resolved ? 'løst' : 'åpen'}
+                  </span>
+                </span>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
       {(dropins ?? []).length > 0 && (
         <section className="rounded-xl border bg-white p-4">

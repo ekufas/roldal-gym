@@ -5,6 +5,7 @@ import { salto } from '@/lib/salto';
 import { supabaseServer, supabaseAdmin } from '@/lib/supabase/server';
 import OpenDoorButton from './open-door-button';
 import ConfirmButton from './confirm-button';
+import ReactivateButton from './reactivate-button';
 
 export const dynamic = 'force-dynamic';
 
@@ -85,6 +86,7 @@ export default async function MembershipPage() {
     : { data: null };
 
   const isActive = membership?.status === 'active';
+  const isPastDue = membership?.status === 'past_due';
   const planName = (membership?.plans as unknown as { name?: string } | null)?.name;
 
   return (
@@ -103,7 +105,15 @@ export default async function MembershipPage() {
         )}
       </div>
 
-      {isActive && <OpenDoorButton />}
+      {isPastDue && (
+        <div className="rounded-xl border border-amber-300 bg-amber-50 p-4">
+          <h2 className="font-semibold text-amber-800">{t('membership.pastDueTitle')}</h2>
+          <p className="mt-1 text-sm text-amber-900">{t('membership.pastDueHint')}</p>
+          <ReactivateButton label={t('membership.reactivate')} />
+        </div>
+      )}
+
+      {(isActive || isPastDue) && <OpenDoorButton />}
 
       {isActive && latestPin && (
         <div className="rounded-xl border bg-white p-4">

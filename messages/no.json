@@ -59,6 +59,9 @@
     "cancelHint": "Medlemskapet avsluttes umiddelbart og du mister tilgang til døra.",
     "cancelButton": "Avslutt medlemskap",
     "cancelConfirm": "Er du sikker på at du vil avslutte medlemskapet?",
+    "pastDueTitle": "Betalingen feilet",
+    "pastDueHint": "Vi prøver igjen automatisk. Du kan også oppdatere Vipps-avtalen din med ett klikk hvis kortet er utløpt.",
+    "reactivate": "Oppdater Vipps-avtale",
     "logout": "Logg ut"
   },
   "dropin": {

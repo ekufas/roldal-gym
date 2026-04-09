@@ -31,7 +31,7 @@ export async function POST(req: Request) {
     .from('memberships')
     .select('id')
     .eq('user_id', profile.id)
-    .eq('status', 'active')
+    .in('status', ['active', 'past_due'])
     .maybeSingle();
   if (!membership) return NextResponse.json({ ok: false, error: 'no_active_membership' }, { status: 403 });
 
