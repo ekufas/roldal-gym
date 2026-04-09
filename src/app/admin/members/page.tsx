@@ -6,7 +6,7 @@ export default async function MembersPage() {
   const db = supabaseAdmin();
   const { data: rows } = await db
     .from('memberships')
-    .select('id, status, current_period_end, users(name, phone, email), plans(name)')
+    .select('id, user_id, status, current_period_end, users(name, phone, email), plans(name)')
     .order('created_at', { ascending: false });
 
   return (
@@ -28,8 +28,8 @@ export default async function MembersPage() {
               const u = r.users as unknown as { name: string | null; phone: string; email: string | null } | null;
               const p = r.plans as unknown as { name: string } | null;
               return (
-                <tr key={r.id} className="border-b last:border-0">
-                  <td className="p-3">{u?.name ?? '—'}</td>
+                <tr key={r.id} className="border-b last:border-0 hover:bg-neutral-50">
+                  <td className="p-3"><a href={`/admin/members/${r.user_id}`} className="text-brand hover:underline">{u?.name ?? '—'}</a></td>
                   <td className="p-3 font-mono">{u?.phone ?? '—'}</td>
                   <td className="p-3">{p?.name ?? '—'}</td>
                   <td className="p-3">
