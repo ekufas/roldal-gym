@@ -9,10 +9,12 @@ export default function LanguageSwitcher() {
 
   function switchTo(next: 'no' | 'en') {
     if (next === locale) return;
-    // Strip current locale prefix if present, then add new one (except for default 'no').
+    // Persist explicit choice so next-intl's auto-detection doesn't override it next visit.
+    document.cookie = `NEXT_LOCALE=${next}; path=/; max-age=31536000; samesite=lax`;
     const stripped = pathname.replace(/^\/(no|en)(?=\/|$)/, '') || '/';
     const target = next === 'no' ? stripped : `/en${stripped === '/' ? '' : stripped}`;
     router.push(target);
+    router.refresh();
   }
 
   return (
