@@ -1,10 +1,42 @@
 import type { ReactNode } from 'react';
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
+import { supabaseServer, supabaseAdmin } from '@/lib/supabase/server';
 import '../globals.css';
 
 export const metadata = { title: 'Røldal Gym — Admin' };
+export const dynamic = 'force-dynamic';
 
-export default function AdminLayout({ children }: { children: ReactNode }) {
+async function requireAdmin() {
+  const sb = supabaseServer();
+  const { data: { user: authUser } } = await sb.auth.getUser();
+  if (!authUser) redirect('/login?next=/admin');
+  const db = supabaseAdmin();
+  const { data: profile } = await db
+    .from('users')
+    .select('is_admin')
+    .eq('auth_id', authUser.id)
+    .maybeSingle();
+  if (!profile?.is_admin) {
+    return { authorized: false as const };
+  }
+  return { authorized: true as const };
+}
+
+export default async function AdminLayout({ children }: { children: ReactNode }) {
+  const gate = await requireAdmin();
+  if (!gate.authorized) {
+    return (
+      <html lang="no">
+        <body>
+          <div className="mx-auto max-w-md p-12 text-center">
+            <h1 className="text-2xl font-bold">Ingen tilgang</h1>
+            <p className="mt-2 text-neutral-600">Denne siden er kun for administratorer.</p>
+          </div>
+        </body>
+      </html>
+    );
+  }
   return (
     <html lang="no">
       <body>

@@ -1,11 +1,17 @@
 'use client';
 export const dynamic = 'force-dynamic';
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { Suspense, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 
 export default function LoginPage() {
+  return <Suspense><LoginInner /></Suspense>;
+}
+
+function LoginInner() {
   const router = useRouter();
+  const params = useSearchParams();
+  const next = params.get('next') ?? '/membership';
   const supabase = createClient();
   const [phone, setPhone] = useState('');
   const [code, setCode] = useState('');
@@ -31,7 +37,7 @@ export default function LoginPage() {
     setBusy(false);
     if (error) { setError(error.message); return; }
     await fetch('/api/auth/ensure-user', { method: 'POST' });
-    router.push('/membership');
+    router.push(next);
     router.refresh();
   }
 
