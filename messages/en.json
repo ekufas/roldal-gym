@@ -32,7 +32,15 @@
     "pinTitle": "Backup code (rotates every hour)",
     "pinHint": "Use this on the keypad at the door if the network is down.",
     "nextRotation": "New code in",
-    "nextCharge": "Next charge"
+    "nextCharge": "Next charge",
+    "profileTitle": "My profile",
+    "profileSave": "Save",
+    "profileSaved": "Saved.",
+    "cancelTitle": "Cancel membership",
+    "cancelHint": "Your membership ends immediately and you lose door access.",
+    "cancelButton": "Cancel membership",
+    "cancelConfirm": "Are you sure you want to cancel your membership?",
+    "logout": "Log out"
   },
   "dropin": {
     "title": "Drop-in",

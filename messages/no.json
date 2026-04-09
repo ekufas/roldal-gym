@@ -32,7 +32,15 @@
     "pinTitle": "Reservekode (roterer hver time)",
     "pinHint": "Bruk denne på tastaturet ved døra hvis nettet er nede.",
     "nextRotation": "Ny kode om",
-    "nextCharge": "Neste trekk"
+    "nextCharge": "Neste trekk",
+    "profileTitle": "Min profil",
+    "profileSave": "Lagre",
+    "profileSaved": "Lagret.",
+    "cancelTitle": "Avslutt medlemskap",
+    "cancelHint": "Medlemskapet avsluttes umiddelbart og du mister tilgang til døra.",
+    "cancelButton": "Avslutt medlemskap",
+    "cancelConfirm": "Er du sikker på at du vil avslutte medlemskapet?",
+    "logout": "Logg ut"
   },
   "dropin": {
     "title": "Drop-in",

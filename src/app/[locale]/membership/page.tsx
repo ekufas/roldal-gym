@@ -1,9 +1,51 @@
 import { redirect } from 'next/navigation';
+import { revalidatePath } from 'next/cache';
 import { getTranslations } from 'next-intl/server';
+import { salto } from '@/lib/salto';
 import { supabaseServer, supabaseAdmin } from '@/lib/supabase/server';
 import OpenDoorButton from './open-door-button';
 
 export const dynamic = 'force-dynamic';
+
+async function saveProfile(formData: FormData) {
+  'use server';
+  const sb = supabaseServer();
+  const { data: { user } } = await sb.auth.getUser();
+  if (!user) return;
+  const name = String(formData.get('name') ?? '').trim() || null;
+  const email = String(formData.get('email') ?? '').trim() || null;
+  const db = supabaseAdmin();
+  await db.from('users').update({ name, email }).eq('auth_id', user.id);
+  revalidatePath('/membership');
+}
+
+async function cancelMembership() {
+  'use server';
+  const sb = supabaseServer();
+  const { data: { user } } = await sb.auth.getUser();
+  if (!user) return;
+  const db = supabaseAdmin();
+  const { data: profile } = await db
+    .from('users')
+    .select('id, salto_user_id')
+    .eq('auth_id', user.id)
+    .maybeSingle();
+  if (!profile) return;
+  await db
+    .from('memberships')
+    .update({ status: 'cancelled', cancelled_at: new Date().toISOString() })
+    .eq('user_id', profile.id)
+    .in('status', ['active', 'past_due']);
+  if (profile.salto_user_id) await salto.disableUser(profile.salto_user_id);
+  revalidatePath('/membership');
+}
+
+async function logout() {
+  'use server';
+  const sb = supabaseServer();
+  await sb.auth.signOut();
+  redirect('/');
+}
 
 export default async function MembershipPage() {
   const t = await getTranslations();
@@ -11,12 +53,10 @@ export default async function MembershipPage() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect('/login');
 
-  // Use service role to fetch joined data (RLS would also allow this but service role
-  // is simpler for the joined query).
   const admin = supabaseAdmin();
   const { data: profile } = await admin
     .from('users')
-    .select('id, name, phone')
+    .select('id, name, phone, email')
     .eq('auth_id', user.id)
     .maybeSingle();
 
@@ -73,6 +113,60 @@ export default async function MembershipPage() {
           </div>
         </div>
       )}
+
+      <form action={saveProfile} className="space-y-3 rounded-xl border bg-white p-4">
+        <h2 className="font-semibold">{t('membership.profileTitle')}</h2>
+        <label className="block text-xs text-neutral-500">
+          {t('signup.name')}
+          <input
+            name="name"
+            defaultValue={profile?.name ?? ''}
+            className="mt-1 w-full rounded border px-3 py-2 text-sm text-neutral-800"
+          />
+        </label>
+        <label className="block text-xs text-neutral-500">
+          {t('signup.phone')}
+          <input
+            value={profile?.phone ?? ''}
+            disabled
+            className="mt-1 w-full rounded border bg-neutral-50 px-3 py-2 text-sm text-neutral-500"
+          />
+        </label>
+        <label className="block text-xs text-neutral-500">
+          {t('signup.email')}
+          <input
+            name="email"
+            type="email"
+            defaultValue={profile?.email ?? ''}
+            className="mt-1 w-full rounded border px-3 py-2 text-sm text-neutral-800"
+          />
+        </label>
+        <button type="submit" className="rounded-xl bg-brand px-4 py-2 text-sm font-semibold text-white">
+          {t('membership.profileSave')}
+        </button>
+      </form>
+
+      {isActive && (
+        <form
+          action={cancelMembership}
+          className="rounded-xl border border-red-200 bg-white p-4"
+        >
+          <h2 className="font-semibold text-red-700">{t('membership.cancelTitle')}</h2>
+          <p className="mt-1 text-xs text-neutral-500">{t('membership.cancelHint')}</p>
+          <button
+            type="submit"
+            className="mt-3 rounded-xl border border-red-300 px-4 py-2 text-sm font-semibold text-red-600"
+          >
+            {t('membership.cancelButton')}
+          </button>
+        </form>
+      )}
+
+      <form action={logout}>
+        <button type="submit" className="text-xs text-neutral-500 underline">
+          {t('membership.logout')}
+        </button>
+      </form>
     </div>
   );
 }
